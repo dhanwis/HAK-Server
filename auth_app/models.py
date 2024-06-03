@@ -86,4 +86,5 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=10, null=True, blank=True, validators=[phone_regex])
     street = models.CharField(max_length=50, null=False, blank=False)
     city = models.CharField(max_length=50, null=False, blank=False)
+    state = models.CharField(max_length=50, null=False, blank=False)
     pincode = models.CharField(max_length=50, null=False, blank=False)
