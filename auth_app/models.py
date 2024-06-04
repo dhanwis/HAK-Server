@@ -82,9 +82,11 @@ class UserProfile(models.Model):
     )
     first_name = models.CharField(max_length=50, null=False, blank=False)
     last_name = models.CharField(max_length=50, null=False, blank=False)
-    email = models.EmailField(max_length=50, unique=True, null=True, blank=True, validators=[validate_email])
+    email = models.EmailField(max_length=50, unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=10, null=True, blank=True, validators=[phone_regex])
     street = models.CharField(max_length=50, null=False, blank=False)
     city = models.CharField(max_length=50, null=False, blank=False)
     state = models.CharField(max_length=50, null=False, blank=False)
     pincode = models.CharField(max_length=50, null=False, blank=False)
+
+    
