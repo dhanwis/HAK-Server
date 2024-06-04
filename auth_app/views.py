@@ -118,12 +118,24 @@ class UserProfileGetAdd(APIView):
     def post(self, request, format=None):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
+        email = request.data.get('email')
+        phone_number = request.data.get('phone_number')
+        street = request.data.get('street')
+        city = request.data.get('city')
+        state = request.data.get('state')
+        pincode = request.data.get('pincode')
         user = request.user
         try:
             user_profile = UserProfile.objects.create(
                 user=user,
                 first_name=first_name,
-                last_name=last_name
+                last_name=last_name,
+                email=email,
+                phone_number=phone_number,
+                street=street,
+                city=city,
+                state=state,
+                pincode=pincode
             )
             user_profile_serializer = UserProfileSerializer(user_profile)
             return Response(user_profile_serializer.data, status=status.HTTP_201_CREATED)
