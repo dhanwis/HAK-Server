@@ -80,13 +80,14 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    first_name = models.CharField(max_length=50, null=False, blank=False)
-    last_name = models.CharField(max_length=50, null=False, blank=False)
-    email = models.EmailField(max_length=50, unique=True, null=True, blank=True)
+    firstname = models.CharField(max_length=50, null=False, blank=False)
+    lastname = models.CharField(max_length=50, null=False, blank=False)
+    email = models.CharField(max_length=50, unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=10, null=True, blank=True, validators=[phone_regex])
     street = models.CharField(max_length=50, null=False, blank=False)
     city = models.CharField(max_length=50, null=False, blank=False)
     state = models.CharField(max_length=50, null=False, blank=False)
     pincode = models.CharField(max_length=50, null=False, blank=False)
 
-    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
