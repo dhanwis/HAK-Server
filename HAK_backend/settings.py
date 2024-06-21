@@ -152,10 +152,10 @@ REST_FRAMEWORK = {
     
 }
 
-SMS_API_KEY='d3789325-134f-11ef-8b60-0200cd936042'
+SMS_API_KEY='31739389-287f-11ef-8b60-0200cd936042'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -196,3 +196,10 @@ CORS_ALLOW_HEADERS = [
     'authorization',
     'x.target',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
