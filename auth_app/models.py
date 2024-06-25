@@ -60,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     otp_expiry = models.DateTimeField(null=True, blank=True)
     max_otp_try = models.CharField(max_length=2, default=settings.MAX_OTP_TRY)
     otp_max_out = models.DateTimeField(null=True, blank=True)
+    name=models.CharField(max_length=20,null=True)
     
     is_product_admin = models.BooleanField(default=False)
     is_order_admin = models.BooleanField(default=False)

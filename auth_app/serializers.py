@@ -1,7 +1,4 @@
-from datetime import timedelta
-import random
-from django.conf import settings
-from django.utils import timezone
+
 from rest_framework import serializers
 from .models import User, UserProfile
 
@@ -24,3 +21,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
         extra_kwargs = {'user': {'read_only': True}}
+
+
+
