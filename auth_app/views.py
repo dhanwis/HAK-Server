@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,17 +7,13 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.conf import settings
 from rest_framework_simplejwt.tokens import AccessToken
-from django.http import Http404
 from .models import User, UserProfile
-from .serializers import UserSerializers, UserProfileSerializer
+from .serializers import UserProfileSerializer
 from .utils import send_otp
 import random
 import datetime
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login
-from rest_framework.permissions import AllowAny , IsAuthenticated
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
@@ -178,3 +173,5 @@ class UserProfileAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
                
+    
+    
