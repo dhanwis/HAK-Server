@@ -13,8 +13,8 @@ class Product(models.Model):
     description = models.TextField(blank=True)
    
 
-    # def __str__(self):
-    #     return self.name
+    def __str__(self):
+        return self.name
 
 
 class Size(models.Model):

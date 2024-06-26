@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from auth_app.models import User
+from auth_app.models import User ,UserProfile
 
 class ProductAdminAddSerializers(serializers.ModelSerializer):
     class Meta:
@@ -12,3 +12,16 @@ class ProductAdminAddSerializers(serializers.ModelSerializer):
         user.save()
         return user  
         
+
+class ProductAdminProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+        extra_kwargs = {'user': {'read_only': True}}
+
+
+class OrderAdminProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+        extra_kwargs = {'user': {'read_only': True}}
