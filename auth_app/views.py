@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,18 +7,15 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.conf import settings
 from rest_framework_simplejwt.tokens import AccessToken
-from django.http import Http404
-from .models import User, UserProfile
-from .serializers import UserSerializers, UserProfileSerializer
+from .models import User
+from .serializers import UserProfileSerializer
 from .utils import send_otp
 import random
 import datetime
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login
-from rest_framework.permissions import AllowAny , IsAuthenticated
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth import get_user_model
 
 
 
@@ -148,33 +144,53 @@ class UserProfileAPIView(APIView):
                 'access_token': str(access_token),
             }
 
-            print(response_data)
+            print(response_data,user_profile)
             return Response(response_data, status=status.HTTP_201_CREATED)
 
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        serializer = UserProfileSerializer(user_profile, data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        user = user_profile.user
-        user_profile.delete()
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class SuperAdminLoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        
+        try:
+            user = get_user_model().objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-               
+        if not user.check_password(password) or not user.is_superuser:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
+
+   
+class ProductAdminLoginAPIView(APIView):
+    def post(self,request,*args,**kwargs):
+        username=request.data.get("username")
+        password=request.data.get("password")
+        try:
+            user=get_user_model().objects.filter(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user.check_password(password) or not user.is_product_admin:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
+
+    
+    
