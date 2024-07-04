@@ -6,6 +6,8 @@ class Category(models.Model):
     image = models.ImageField(upload_to='category-image')
     name = models.CharField(max_length=50)
     
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -51,6 +53,6 @@ class ProductVariant(models.Model):
         unique_together = ('product', 'size', 'color')
 
     def __str__(self):
-        return f"{self.product.name} - {self.color} - {self.size}"
+        return f"{self.product.name} - {self.color} - {self.stock}"
     
     
