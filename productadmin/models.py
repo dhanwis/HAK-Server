@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Category(models.Model):
-    image = models.ImageField(upload_to='category-image')
+    image = models.ImageField(upload_to='img/category-image')
     name = models.CharField(max_length=50)
     
 
@@ -24,7 +24,7 @@ class Size(models.Model):
 
 
 class ColorImage(models.Model):
-    image = models.ImageField(upload_to='color', null=True, blank=True)
+    image = models.ImageField(upload_to='img/colorImg', null=True, blank=True)
     name = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):

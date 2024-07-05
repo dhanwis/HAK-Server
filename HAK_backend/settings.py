@@ -42,7 +42,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'auth_app',
+    'client',
+    'productadmin',
+    'superadmin',
     'corsheaders',
+    
 ]
 
 CORS_ALLOWED_ORIGINS = [
