@@ -4,7 +4,9 @@ from .serializers import ProductAdminAddSerializers,ProductAdminProfileSerialize
 from rest_framework import status
 from auth_app.models import User ,UserProfile
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from productadmin.models import *
+from auth_app.serializers import UserProfileSerializer
 # Create your views here.
 
 ###############################################ProductAdminManagemet#####################################################
@@ -75,6 +77,31 @@ class OrderAdminProfile(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     
-##################################################CategoryManagement#################################################
+##################################################USER MANAGEMENT#################################################
+
+class DeactivateCustomerAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk, is_customer=True)
+        except User.DoesNotExist:
+            raise Http404("Customer not found.")
+        user.is_active = False
+        user.save()
+        try:
+            profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserProfileSerializer(profile)
+        return Response({'message': 'Customer deactivated.', 'profile': serializer.data}, status=status.HTTP_200_OK)
+
+    
+    def delete(self,request,pk):
+        try:
+            user=User.object.get(pk=pk,is_customer=True)
+        except User.DoesNotExist:
+            raise Http404("Customer not found")
+        user.delete()
+        return Response(status=status.HTTP_200_OK)
+    
 
 
