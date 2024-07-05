@@ -24,3 +24,17 @@ class ColorImageSerializer(serializers.ModelSerializer):
     class Meta:
         model=ColorImage
         fields="__all__"
+
+
+
+class ColorSerializer(serializers.ModelSerializer):
+    images = ColorImageSerializer(many=True)
+    class Meta:
+        model=Color
+        fields="__all__"
+
+
+class ProductvarientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ProductVariant
+        fields="__all__"

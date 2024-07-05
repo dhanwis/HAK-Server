@@ -83,9 +83,58 @@ class SizeViewSet(ModelViewSet):
 # }
 
 
-class ColorImageViewset(ModelViewSet):
+class ColorImageViewSet(ModelViewSet):
     serializer_class=ColorImageSerializer
     queryset=ColorImage.objects.all()
     
 
-#################################################
+#################################################ColourManagement########################################
+# GET /colors/: Retrieves a list of all colors.
+# POST /colors/: Creates a new color.
+# GET /colors/{id}/: Retrieves details of a specific color.
+# PUT /colors/{id}/: Updates a specific color.
+# PATCH /colors/{id}/: Partially updates a specific color.
+# DELETE /colors/{id}/: Deletes a specific color.
+
+
+# {
+#   "product": 2,
+#   "name": "Blue",
+#   "images": [
+#     {"image": "img/color/blue1.jpg"},
+#     {"image": "img/color/blue2.jpg"}
+#   ]
+# }
+
+
+class ColorViewSet(ModelViewSet):
+    serializer_class=ColorSerializer
+    queryset=Color.objects.all()
+
+
+
+#############################################ProductVarientManagement############################################
+
+# GET /product-variants/: Retrieves a list of all product variants.
+# POST /product-variants/: Creates a new product variant.
+# GET /product-variants/{id}/: Retrieves details of a specific product variant.
+# PUT /product-variants/{id}/: Updates a specific product variant.
+# PATCH /product-variants/{id}/: Partially updates a specific product variant.
+# DELETE /product-variants/{id}/: Deletes a specific product variant.
+
+# {
+#   "product": 1,
+#   "size": 2,
+#   "color": 3,
+#   "actual_price": "49.99",
+#   "discount_price": "39.99",
+#   "stock": 100
+# }
+
+
+class ProductVariantViewSet(ModelViewSet):
+    serializer_class=ProductvarientSerializer
+    queryset=ProductVariant.objects.all()
+
+
+
