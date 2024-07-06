@@ -48,6 +48,7 @@ class ProductVariant(models.Model):
     actual_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     stock = models.PositiveIntegerField(default=0)
+    is_featured = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('product', 'size', 'color')

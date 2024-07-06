@@ -9,6 +9,8 @@ from .models import *
 from .serializers import *
 from django.http import Http404
 from django.db import transaction
+from django.db.models import Sum
+from productadmin.models import ProductVariant
 
 # Create your views here.
 
@@ -141,27 +143,48 @@ class WishlistView(APIView):
             return Response({"detail": "Wishlist item not found."}, status=status.HTTP_404_NOT_FOUND)
         
 class CheckOutView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = CheckOutSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                with transaction.atomic():
-                    # Create CheckOut instance
-                    checkout_instance = serializer.save()
-
-                    # Update product quantities and mark cart item as ordered
-                    cart_item = checkout_instance.order
+    def post(self, request, user_id, *args, **kwargs):
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"error": f"User with id {user_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        
+        cart_items = CartItem.objects.filter(user=user, is_ordered=False)
+        
+        if not cart_items.exists():
+            return Response({"error": "No items to checkout."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            with transaction.atomic():
+                # Process each cart item
+                for cart_item in cart_items:
+                    # Update stock and mark as ordered
                     cart_item.item.stock -= cart_item.quantity
                     cart_item.item.save()
                     cart_item.is_ordered = True
                     cart_item.save()
                     
-                    response_serializer = CheckOutSerializer(checkout_instance)
-                    return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+                    # Create Checkout record
+                    CheckOut.objects.create(
+                        order=cart_item,
+                        first_name=request.data.get('first_name'),
+                        last_name=request.data.get('last_name'),
+                        email=request.data.get('email'),
+                        address=request.data.get('address'),
+                        mobile_no=request.data.get('mobile_no'),
+                        company_name=request.data.get('company_name'),
+                        country=request.data.get('country'),
+                        city=request.data.get('city'),
+                        state=request.data.get('state'),
+                        postal_code=request.data.get('postal_code')
+                    )
+                
+                # Return success response
+                return Response({"message": "Checkout successful."}, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
     def get(self, request, user_id, *args, **kwargs):
         try:
             # Fetch user object based on user_id
@@ -177,3 +200,40 @@ class CheckOutView(APIView):
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class LatestProductView(APIView) :
+    def get(self, request) :
+        latest_product = ProductVariant.objects.order_by('-id')[:3]
+        serializer = ProductDisplaySerializer(latest_product, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class BestSellerView(APIView) :
+    def get(self, request) :
+        bestsellers = ProductVariant.objects.filter(cartitem__is_ordered=True)\
+                                            .annotate(total_ordered=Sum('cartitem__quantity'))\
+                                            .order_by('-total_ordered')[:3]
+        serializer = ProductDisplaySerializer(bestsellers, many=True)   
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class FeaturedProductView(APIView) :
+    def get(self, request) :
+        featured_product = ProductVariant.objects.filter(is_featured=True).order_by('-id')[:3]
+        serializer = ProductDisplaySerializer(featured_product, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class TrendingProductView(APIView) :
+    def get(self, request) :
+        trending_product = ProductVariant.objects.filter(cartitem__is_ordered=True)\
+                                            .annotate(total_ordered=Sum('cartitem__quantity'))\
+                                            .order_by('-total_ordered')[:10]
+        serializer = ProductDisplaySerializer(trending_product, many=True)   
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductDetailView(APIView) :
+    def get(self, request, product_id) :
+        try :
+            product = ProductVariant.objects.get(id=product_id)
+            serializer = ProductDisplaySerializer(product)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except :
+            return Response({"error" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from productadmin.serializers import *
 
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='item.product.name', read_only=True)
@@ -47,4 +48,13 @@ class CheckOutSerializer(serializers.ModelSerializer):
             'quantity': cart_item.quantity,
             'total': cart_item.total_price  # Assuming you have a property 'total_price' in CartItem model
         }
-        return [ordered_item]
+        return ordered_item
+
+class ProductDisplaySerializer(serializers.ModelSerializer):
+    color = ColorSerializer(read_only=True)
+    product = ProductSerializer(read_only=True)
+    size = SizeSerializer(read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = ['id', 'product', 'size', 'color', 'actual_price', 'discount_price', 'stock']

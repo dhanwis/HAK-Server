@@ -26,7 +26,7 @@ class WishList(models.Model):
         return f"{self.user.username} - {self.product.product.name}"
     
 class CheckOut(models.Model) :
-    order = models.OneToOneField(CartItem, on_delete=models.CASCADE)
+    order = models.ForeignKey(CartItem, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
