@@ -9,8 +9,9 @@ from .models import *
 from .serializers import *
 from django.http import Http404
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from productadmin.models import ProductVariant
+from .pagination import CustomLimitOffsetPagination
 # Create your views here.
 
 
@@ -155,7 +156,7 @@ class CheckOutView(APIView):
         
         try:
             with transaction.atomic():
-                # Process each cart item
+                # Create Checkout record for each cart item
                 for cart_item in cart_items:
                     # Update stock and mark as ordered
                     cart_item.item.stock -= cart_item.quantity
@@ -164,7 +165,7 @@ class CheckOutView(APIView):
                     cart_item.save()
                     
                     # Create Checkout record
-                    CheckOut.objects.create(
+                    checkout = CheckOut.objects.create(
                         order=cart_item,
                         first_name=request.data.get('first_name'),
                         last_name=request.data.get('last_name'),
@@ -175,11 +176,14 @@ class CheckOutView(APIView):
                         country=request.data.get('country'),
                         city=request.data.get('city'),
                         state=request.data.get('state'),
-                        postal_code=request.data.get('postal_code')
+                        postal_code=request.data.get('postal_code'),
+                        order_status=request.data.get('order_status')
                     )
                 
+                serializer = CheckOutSerializer(checkout)
+                
                 # Return success response
-                return Response({"message": "Checkout successful."}, status=status.HTTP_201_CREATED)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -236,3 +240,55 @@ class ProductDetailView(APIView) :
             return Response(serializer.data, status=status.HTTP_200_OK)
         except :
             return Response({"error" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class ProductSearch(APIView) :
+    def get(self, request) :
+        query = request.GET.get('q')
+        if query:
+            products = ProductVariant.objects.filter(
+                Q(product__name__icontains=query) |
+                Q(product__description__icontains=query) |
+                Q(product__category__name__icontains=query)
+            )
+        serilaizer = ProductDisplaySerializer(products, many=True)
+        return Response(serilaizer.data)
+
+class ProductSort(APIView) :
+    pagination_class = CustomLimitOffsetPagination
+
+    def get(self, request) :
+        category_query = request.query_params.get('category',None)
+
+        if category_query :
+            products = ProductVariant.objects.filter(
+                Q(product__category__name__iexact=category_query)
+            )
+        else :
+            products = ProductVariant.objects.all()
+
+        paginator = self.pagination_class()
+        paginated_products = paginator.paginate_queryset(products, request)
+        serializer = ProductDisplaySerializer(paginated_products, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+class UserReview(APIView) :
+    def get(self, request, user_id) :
+        reviews = Review.objects.filter(user_id=user_id)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, user_id) :
+        data = request.data.copy()
+        data['user'] = user_id
+        serializer = ReviewSerializer(data=data)
+        if serializer.is_valid() :
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+    
+class ProductReviewView(APIView) :
+    def get(self, request, product_id) :
+        review = Review.objects.filter(product_id=product_id)
+        serializer = ReviewSerializer(review, many=True)
+        return Response(serializer.data)

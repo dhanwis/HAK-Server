@@ -37,8 +37,9 @@ class CheckOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckOut
         fields = [
-            'order', 'first_name', 'last_name', 'email', 'address', 'mobile_no',
-            'company_name', 'country', 'city', 'state', 'postal_code', 'ordered_items'
+            'id', 'order', 'first_name', 'last_name', 'email', 'address', 'mobile_no',
+            'company_name', 'country', 'city', 'state', 'postal_code', 'ordered_items',
+            'order_status'
         ]
 
     def get_ordered_items(self, instance):
@@ -46,9 +47,10 @@ class CheckOutSerializer(serializers.ModelSerializer):
         ordered_item = {
             'product_name': cart_item.item.product.name,
             'quantity': cart_item.quantity,
-            'total': cart_item.total_price  # Assuming you have a property 'total_price' in CartItem model
+            'total': cart_item.item.discount_price * cart_item.quantity  # Assuming 'discount_price' in ProductVariant model
         }
         return ordered_item
+
 
 class ProductDisplaySerializer(serializers.ModelSerializer):
     color = ColorSerializer(read_only=True)
@@ -58,3 +60,8 @@ class ProductDisplaySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ['id', 'product', 'size', 'color', 'actual_price', 'discount_price', 'stock']
+
+class ReviewSerializer(serializers.ModelSerializer) :
+    class Meta:
+        model = Review
+        fields = "__all__"
