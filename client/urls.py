@@ -15,5 +15,9 @@ urlpatterns = [
     path('product/featured',FeaturedProductView.as_view(), name='product-featured'),
     path('product/trending',TrendingProductView.as_view(), name='product-trending'),
     path('product/<int:product_id>/', ProductDetailView.as_view(), name='product-detail'),
+    path('product/search/', ProductSearch.as_view(), name="product-search"),
+    path('product/sort/', ProductSort.as_view(), name='product-sort'),
+    path('product/review/<int:user_id>/', UserReview.as_view(), name='product-review'),
+    path('product/<int:product_id>/review/', ProductReviewView.as_view(), name='review-product'),
     
 ]
