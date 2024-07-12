@@ -206,13 +206,13 @@ class CheckOutView(APIView):
         
 class LatestProductView(APIView) :
     def get(self, request) :
-        latest_product = ProductVariant.objects.order_by('-id')[:3]
+        latest_product = ProductVariant.objects.filter(product_status='Sale').order_by('-id')[:3]
         serializer = ProductDisplaySerializer(latest_product, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class BestSellerView(APIView) :
     def get(self, request) :
-        bestsellers = ProductVariant.objects.filter(cartitem__is_ordered=True)\
+        bestsellers = ProductVariant.objects.filter(cartitem__is_ordered=True, product_status='Sale')\
                                             .annotate(total_ordered=Sum('cartitem__quantity'))\
                                             .order_by('-total_ordered')[:3]
         serializer = ProductDisplaySerializer(bestsellers, many=True)   
@@ -220,13 +220,13 @@ class BestSellerView(APIView) :
     
 class FeaturedProductView(APIView) :
     def get(self, request) :
-        featured_product = ProductVariant.objects.filter(is_featured=True).order_by('-id')[:3]
+        featured_product = ProductVariant.objects.filter(is_featured=True, product_status='Sale').order_by('-id')[:3]
         serializer = ProductDisplaySerializer(featured_product, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class TrendingProductView(APIView) :
     def get(self, request) :
-        trending_product = ProductVariant.objects.filter(cartitem__is_ordered=True)\
+        trending_product = ProductVariant.objects.filter(cartitem__is_ordered=True, product_status='Sale')\
                                             .annotate(total_ordered=Sum('cartitem__quantity'))\
                                             .order_by('-total_ordered')[:10]
         serializer = ProductDisplaySerializer(trending_product, many=True)   
@@ -235,7 +235,7 @@ class TrendingProductView(APIView) :
 class ProductDetailView(APIView) :
     def get(self, request, product_id) :
         try :
-            product = ProductVariant.objects.get(id=product_id)
+            product = ProductVariant.objects.get(id=product_id, product_status='Sale')
             serializer = ProductDisplaySerializer(product)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except :
@@ -248,7 +248,8 @@ class ProductSearch(APIView) :
             products = ProductVariant.objects.filter(
                 Q(product__name__icontains=query) |
                 Q(product__description__icontains=query) |
-                Q(product__category__name__icontains=query)
+                Q(product__category__name__icontains=query), 
+                product_status='Sale'
             )
         serilaizer = ProductDisplaySerializer(products, many=True)
         return Response(serilaizer.data)
@@ -261,10 +262,10 @@ class ProductSort(APIView) :
 
         if category_query :
             products = ProductVariant.objects.filter(
-                Q(product__category__name__iexact=category_query)
+                Q(product__category__name__iexact=category_query), product_status='sale'
             )
         else :
-            products = ProductVariant.objects.all()
+            products = ProductVariant.objects.filter(product_status='sale')
 
         paginator = self.pagination_class()
         paginated_products = paginator.paginate_queryset(products, request)

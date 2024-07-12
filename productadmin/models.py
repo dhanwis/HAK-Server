@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 
 # Create your models here.
 
@@ -40,6 +41,8 @@ class Color(models.Model):
 
 
 class ProductVariant(models.Model):
+    PRODUCT_STATUS_CHOICE = (("Sale", "Sale"),
+                             ("Out of Stock", "Out of Stock"))
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
@@ -55,9 +58,14 @@ class ProductVariant(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.color} - {self.size}"
     
-    def save(self, *args, **kwargs) :
-        if self.actual_price and self.discount_percentage :
-            discount_amount = (self.discount_percentage / 100) * self.actual_price
+    def save(self, *args, **kwargs):
+        if self.stock == 0 :
+            self.product_status = "Out of Stock"
+        else :
+            self.product_status = "Sale"
+
+        if self.actual_price and self.discount_percentage:
+            discount_amount = (Decimal(self.discount_percentage) / 100) * self.actual_price
             self.discount_price = self.actual_price - discount_amount
         super().save(*args, **kwargs)
     
