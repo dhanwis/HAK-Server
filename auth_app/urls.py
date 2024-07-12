@@ -13,4 +13,7 @@ urlpatterns=[
     path('customer/<int:customer_id>/verify-otp/',CustomerVerifyOTP.as_view(),name='user-verify-otp'),
     path('customer/<int:customer_id>/regenerate-otp/', CustomerRegenerateOTP.as_view(), name='user-regenerate-otp'),
     path('customer/profile/add/', UserProfileAPIView.as_view(),name="userpro-add"),
+    path('productadmin/login/', ProductAdminLoginAPIView.as_view(), name="productadmin-login"),
+    path('orderadmin/login/', OrderAdminLoginAPIView.as_view(), name="orderadmin-login"),
+    path('superadmin/login/', SuperAdminLoginView.as_view(), name="superadmin-login"),
 ]
