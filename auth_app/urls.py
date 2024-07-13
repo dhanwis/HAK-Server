@@ -16,4 +16,5 @@ urlpatterns=[
     path('productadmin/login/', ProductAdminLoginAPIView.as_view(), name="productadmin-login"),
     path('orderadmin/login/', OrderAdminLoginAPIView.as_view(), name="orderadmin-login"),
     path('superadmin/login/', SuperAdminLoginView.as_view(), name="superadmin-login"),
+    path('salesadmin/login', SalesAdminLoginAPIView.as_view(), name="sales-admin-login"),
 ]
