@@ -39,6 +39,7 @@ class LoginView(APIView):
 
         user.otp = otp
         user.otp_expiry = otp_expiry
+        user.is_customer = True
         user.save()
 
         # Function to send OTP, adjust this according to your sending method
@@ -207,6 +208,25 @@ class OrderAdminLoginAPIView(APIView):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+    
+class SalesAdminLoginAPIView(APIView) :
+    def post(self, request, *args, **kwargs) :
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        try :
+            user = get_user_model().objects.get(username=username)
+        except User.DoesNotExist :
+            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.check_password(password) or not user.is_sales_admin:
+            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh' : str(refresh),
+            'access' : str(refresh.access_token),
         }, status=status.HTTP_200_OK)
 
 
