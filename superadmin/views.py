@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import ProductAdminAddSerializers,ProductAdminProfileSerializer,OrderAdminProfileSerializer
+from .serializers import ProductAdminAddSerializers,ProductAdminProfileSerializer,OrderAdminProfileSerializer,OrderAdminAddSerializers, SalesAdminAddSerializer, SalesAdminProfileSerializer
 from rest_framework import status
 from auth_app.models import User ,UserProfile
 from django.shortcuts import get_object_or_404
@@ -47,7 +47,7 @@ class ProductAdminProfile(APIView):
 
 class CreateOrderAdminView(APIView):
     def post(self,requset,*args,**kwargs):
-        serializer=OrderAdminProfileSerializer(data=requset.data)
+        serializer=OrderAdminAddSerializers(data=requset.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
@@ -59,12 +59,12 @@ class OrderAdminProfile(APIView):
     
     def get(self,request,pk):
         admin=get_object_or_404(UserProfile,pk=pk,is_order_admin=True)
-        serializer=ProductAdminProfileSerializer(admin)
+        serializer=OrderAdminProfileSerializer(admin)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
     def patch(self,request,pk,*args,**kwargs):
         admin=get_object_or_404(UserProfile,pk=pk,is_order_admin=True)
-        serializer=ProductAdminProfileSerializer(admin,data=request.data,partial=True)
+        serializer=OrderAdminProfileSerializer(admin,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
@@ -103,5 +103,33 @@ class DeactivateCustomerAPIView(APIView):
         user.delete()
         return Response(status=status.HTTP_200_OK)
     
+############################################ SalesAdminManagement ####################################
 
+class CreateSalesAdminView(APIView) :
+    def post(self, request, *args, **kwargs) :
+        serializer = SalesAdminAddSerializer(data=request.data)
+        if serializer.is_valid() :
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else :
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SalesAdminProfileView(APIView) :
+    def get(self, request, pk) :
+        admin = get_object_or_404(User, pk=pk, is_sales_admin = True)
+        serializer = SalesAdminProfileSerializer(admin)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk, *args, **kwargs) :
+        admin = get_object_or_404(User, pk=pk, is_sales_admin = True)
+        serializer = SalesAdminProfileSerializer(admin)
+        if serializer.is_valid() :
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else :
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk, *args, **kwargs) :
+        admin = get_object_or_404(User, pk=pk, is_sales_admin=True)
+        admin.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

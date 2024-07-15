@@ -39,6 +39,7 @@ class LoginView(APIView):
 
         user.otp = otp
         user.otp_expiry = otp_expiry
+        user.is_customer = True
         user.save()
 
         # Function to send OTP, adjust this according to your sending method
@@ -156,6 +157,9 @@ class SuperAdminLoginView(APIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
         password = request.data.get("password")
+
+        print(username)
+        print(password)
         
         try:
             user = get_user_model().objects.get(username=username)
@@ -169,6 +173,7 @@ class SuperAdminLoginView(APIView):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'user':{'is_superuser' : True},
         }, status=status.HTTP_200_OK)
 
 
@@ -179,7 +184,7 @@ class ProductAdminLoginAPIView(APIView):
         username=request.data.get("username")
         password=request.data.get("password")
         try:
-            user=get_user_model().objects.filter(username=username)
+            user=get_user_model().objects.get(username=username)
         except User.DoesNotExist:
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -190,6 +195,43 @@ class ProductAdminLoginAPIView(APIView):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
+class OrderAdminLoginAPIView(APIView):
+    def post(self,request,*args,**kwargs):
+        username=request.data.get("username")
+        password=request.data.get("password")
+        try:
+            user=get_user_model().objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user.check_password(password) or not user.is_order_admin:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+    
+class SalesAdminLoginAPIView(APIView) :
+    def post(self, request, *args, **kwargs) :
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        try :
+            user = get_user_model().objects.get(username=username)
+        except User.DoesNotExist :
+            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.check_password(password) or not user.is_sales_admin:
+            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh' : str(refresh),
+            'access' : str(refresh.access_token),
         }, status=status.HTTP_200_OK)
 
 
