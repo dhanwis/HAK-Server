@@ -97,7 +97,7 @@ class DeactivateCustomerAPIView(APIView):
     
     def delete(self,request,pk):
         try:
-            user=User.object.get(pk=pk,is_customer=True)
+            user=User.objects.get(pk=pk,is_customer=True)
         except User.DoesNotExist:
             raise Http404("Customer not found")
         user.delete()
