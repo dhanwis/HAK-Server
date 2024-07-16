@@ -170,8 +170,9 @@ class AdminLoginView(APIView):
         responce_data = {
             'refresh' : str(refresh),
             'access' : str(refresh.access_token),
+            'user' : {admin_type:True}
         }
-        responce_data[admin_type] = True
+        #responce_data[admin_type] = True
         return Response(responce_data, status=status.HTTP_200_OK)
     
     def _get_user(self, username) :
