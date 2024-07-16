@@ -26,10 +26,18 @@ from auth_app.serializers import UserProfileSerializer
 
 class CategoryList(APIView):
     
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+    def get(self, request, pk=None):
+        if pk is not None:
+            try:
+                category = Category.objects.get(pk=pk)
+                serializer = CategorySerializer(category)
+                return Response(serializer.data)
+            except Category.DoesNotExist:
+                return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            categories = Category.objects.all()
+            serializer = CategorySerializer(categories, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
