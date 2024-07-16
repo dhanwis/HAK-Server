@@ -4,7 +4,7 @@ from decimal import Decimal
 # Create your models here.
 
 class Category(models.Model):
-    image = models.ImageField(upload_to='img/category-image')
+    image = models.ImageField(upload_to='category-image')
     name = models.CharField(max_length=50)
     
 
@@ -25,7 +25,7 @@ class Size(models.Model):
 
 
 class ColorImage(models.Model):
-    image = models.ImageField(upload_to='img/colorImg', null=True, blank=True)
+    image = models.ImageField(upload_to='colorImg', null=True, blank=True)
     name = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
