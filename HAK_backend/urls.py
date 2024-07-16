@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,3 +26,8 @@ urlpatterns = [
     path('productadmin/',include('productadmin.urls')),
     path('superadmin/',include('superadmin.urls')),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=os.path.join(settings.BASE_DIR, 'img'))
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
