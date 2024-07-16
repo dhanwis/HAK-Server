@@ -153,87 +153,40 @@ class UserProfileAPIView(APIView):
 
 
 
-class SuperAdminLoginView(APIView):
+class AdminLoginView(APIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        print(username)
-        print(password)
+        user = self._get_user(username)
+        if not user or not user.check_password(password) :
+            return Response({'detail' : 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        try:
-            user = get_user_model().objects.get(username=username)
-        except User.DoesNotExist:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        if not user.check_password(password) or not user.is_superuser:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'user':{'is_superuser' : True},
-        }, status=status.HTTP_200_OK)
-
-
-
-   
-class ProductAdminLoginAPIView(APIView):
-    def post(self,request,*args,**kwargs):
-        username=request.data.get("username")
-        password=request.data.get("password")
-        try:
-            user=get_user_model().objects.get(username=username)
-        except User.DoesNotExist:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        if not user.check_password(password) or not user.is_product_admin:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
-
-class OrderAdminLoginAPIView(APIView):
-    def post(self,request,*args,**kwargs):
-        username=request.data.get("username")
-        password=request.data.get("password")
-        try:
-            user=get_user_model().objects.get(username=username)
-        except User.DoesNotExist:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        if not user.check_password(password) or not user.is_order_admin:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
-    
-class SalesAdminLoginAPIView(APIView) :
-    def post(self, request, *args, **kwargs) :
-        username = request.data.get('username')
-        password = request.data.get('password')
-
-        try :
-            user = get_user_model().objects.get(username=username)
-        except User.DoesNotExist :
-            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        admin_type = self._get_admin_type(user)
+        if not admin_type :
+            return Response({'detail' : 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        if not user.check_password(password) or not user.is_sales_admin:
-            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        refresh = RefreshToken.for_user(user)
-        return Response({
+        refresh =   RefreshToken.for_user(user)
+        responce_data = {
             'refresh' : str(refresh),
             'access' : str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
-
-
+        }
+        responce_data[admin_type] = True
+        return Response(responce_data, status=status.HTTP_200_OK)
     
-    
+    def _get_user(self, username) :
+        try :
+            return get_user_model().objects.get(username=username)
+        except get_user_model().DoesNotExist :
+            return None
+        
+    def _get_admin_type(self, user) :
+        if user.is_superuser:
+            return 'super_user'
+        elif user.is_product_admin:
+            return 'product_admin'
+        elif user.is_order_admin:
+            return 'order_admin'
+        elif user.is_sales_admin:
+            return 'sales_admin'
+        

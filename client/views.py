@@ -293,3 +293,4 @@ class ProductReviewView(APIView) :
         review = Review.objects.filter(product_id=product_id)
         serializer = ReviewSerializer(review, many=True)
         return Response(serializer.data)
+

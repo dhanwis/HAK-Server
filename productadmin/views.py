@@ -22,7 +22,7 @@ from auth_app.serializers import UserProfileSerializer
 # {
 #   "name": "Books"
 #   "image":"path"
-# }
+# } 
 
 class CategoryList(APIView):
     
