@@ -17,7 +17,7 @@ class ProductAdminAddSerializers(serializers.ModelSerializer):
 class ProductAdminProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username",'phone_number','email','name','is_product_admin']
+        fields = ["id","username",'phone_number','email','name','is_product_admin']
         extra_kwargs = {'user': {'read_only': True}}
 
 class OrderAdminAddSerializers(serializers.ModelSerializer):
