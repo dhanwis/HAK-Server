@@ -14,5 +14,7 @@ urlpatterns=[
     path('customer/<int:customer_id>/regenerate-otp/', CustomerRegenerateOTP.as_view(), name='user-regenerate-otp'),
     path('customer/profile/add/', UserProfileAPIView.as_view(),name="userpro-add"),
     path('admin/login/', AdminLoginView.as_view(), name='admin-login'),
-    path('admin/productadminview/', AllProductAdminView.as_view(), name="productadminview"),
+    path('admin/productadminview/', AllProductAdminView.as_view(), name="allproductadminview"),
+    path('admin/orderadmin/', AllOrderAdminView.as_view(), name="allorderadminview"),
+    path('admin/salesadmin/', AllsalesAdminView.as_view(), name='allsalesadminview'),
 ]
