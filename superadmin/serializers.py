@@ -35,7 +35,7 @@ class OrderAdminAddSerializers(serializers.ModelSerializer):
 class OrderAdminProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username",'phone_number','email','name','is_order_admin']
+        fields = ["id","username",'phone_number','email','name','is_order_admin']
         extra_kwargs = {'user': {'read_only': True}}
 
 class SalesAdminAddSerializer(serializers.ModelSerializer) :
@@ -52,7 +52,7 @@ class SalesAdminAddSerializer(serializers.ModelSerializer) :
 class SalesAdminProfileSerializer(serializers.ModelSerializer) :
     class Meta:
         model=User
-        fields=fields=["username",'phone_number','email','name','is_sales_admin']
+        fields=fields=["id","username",'phone_number','email','name','is_sales_admin']
         extra_kwargs = {'user': {'read_only': True}}
 
 class OrderStatusChangeSerializer(serializers.ModelSerializer) :
