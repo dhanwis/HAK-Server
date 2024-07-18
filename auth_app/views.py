@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import get_user_model
-from superadmin.serializers import ProductAdminProfileSerializer
+from superadmin.serializers import ProductAdminProfileSerializer, OrderAdminProfileSerializer, SalesAdminProfileSerializer
 
 
 
@@ -197,3 +197,14 @@ class AllProductAdminView(APIView) :
         serializer=ProductAdminProfileSerializer(admin, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
         
+class AllOrderAdminView(APIView) :
+    def get(self,request):
+        admin=User.objects.filter(is_order_admin=True)
+        serializer=OrderAdminProfileSerializer(admin, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+class AllsalesAdminView(APIView) :
+    def get(self,request):
+        admin=User.objects.filter(is_sales_admin=True)
+        serializer=SalesAdminProfileSerializer(admin, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
