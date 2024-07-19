@@ -6,6 +6,9 @@ from decimal import Decimal
 class Category(models.Model):
     image = models.ImageField(upload_to='category-image')
     name = models.CharField(max_length=50)
+
+    def __str__(self) :
+        return self.name
     
 
 class Product(models.Model):
@@ -29,13 +32,16 @@ class ColorImage(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
-        return f"ColorImage {self.id}"
+        return f"ColorImage {self.name}"
 
 
 class Color(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=50)
     images = models.ManyToManyField(ColorImage, related_name='colors')
+
+    def __str__(self):
+        return self.name
 
     
 
