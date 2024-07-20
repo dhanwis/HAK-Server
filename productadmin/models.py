@@ -38,7 +38,7 @@ class ColorImage(models.Model):
 class Color(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=50)
-    images = models.ManyToManyField(ColorImage, related_name='colors')
+    image = models.ForeignKey(ColorImage, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -49,6 +49,7 @@ class Color(models.Model):
 class ProductVariant(models.Model):
     PRODUCT_STATUS_CHOICE = (("Sale", "Sale"),
                              ("Out of Stock", "Out of Stock"))
+    product_status = models.CharField(max_length=20, choices=PRODUCT_STATUS_CHOICE, default='Sale')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)

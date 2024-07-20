@@ -28,10 +28,11 @@ class ColorImageSerializer(serializers.ModelSerializer):
 
 
 class ColorSerializer(serializers.ModelSerializer):
-    images = ColorImageSerializer(many=True)
+    image = serializers.PrimaryKeyRelatedField(queryset=ColorImage.objects.all())
+
     class Meta:
-        model=Color
-        fields="__all__"
+        model = Color
+        fields = '__all__'
 
 
 class ProductvarientSerializer(serializers.ModelSerializer):
