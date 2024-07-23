@@ -38,7 +38,7 @@ class ColorImage(models.Model):
 class Color(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=50)
-    image = models.ForeignKey(ColorImage, on_delete=models.CASCADE, null=True, blank=True)
+    images = models.ManyToManyField(ColorImage, related_name='colors')
 
     def __str__(self):
         return self.name

@@ -28,11 +28,16 @@ class ColorImageSerializer(serializers.ModelSerializer):
 
 
 class ColorSerializer(serializers.ModelSerializer):
-    image = serializers.PrimaryKeyRelatedField(queryset=ColorImage.objects.all())
+    images = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=ColorImage.objects.all(),
+        required=False
+    )
+
 
     class Meta:
         model = Color
-        fields = '__all__'
+        fields = ['id', 'name', 'images', 'product']
 
 
 class ProductvarientSerializer(serializers.ModelSerializer):

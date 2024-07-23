@@ -232,14 +232,11 @@ class TrendingProductView(APIView) :
         serializer = ProductDisplaySerializer(trending_product, many=True)   
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ProductDetailView(APIView) :
-    def get(self, request, product_id) :
-        try :
-            product = ProductVariant.objects.get(id=product_id, product_status='Sale')
-            serializer = ProductDisplaySerializer(product)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except :
-            return Response({"error" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+class ProductDetailView(APIView):
+    def get(self, request, product_id):
+        product = get_object_or_404(ProductVariant, id=product_id, product_status='Sale')
+        serializer = ProductDisplaySerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
 class ProductSearch(APIView) :
     def get(self, request) :

@@ -161,7 +161,7 @@ class SizeViewSet(ModelViewSet):
 
 
 class ColorImageAPIView(APIView):
-    
+
     def get(self, request, pk=None):
         if pk:
             color_image = self.get_object(pk)
@@ -218,7 +218,7 @@ class ColorImageAPIView(APIView):
 
 
 class ColorAPIView(APIView):
-    
+
     def get(self, request, pk=None):
         if pk:
             color = self.get_object(pk)
