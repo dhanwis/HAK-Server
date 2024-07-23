@@ -18,6 +18,9 @@ urlpatterns = [
     path('product-variants/', ProductVariantAPIView.as_view(), name='product-variant-list'),
     path('product-variants/<int:pk>/', ProductVariantAPIView.as_view(), name='product-variant-detail'),
     path('customer-profiles/', CustomerProfilesAPIView.as_view(), name='customer-profiles'),
+    path('allproducts/', AllProductViewAPIView.as_view(), name='allproductdisplay'),
+    path('allproducts/<int:pk>/', AllProductViewAPIView.as_view(), name='allproductdisplay'),
+    
     
     path('', include(router.urls)),
 ]

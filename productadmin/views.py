@@ -8,6 +8,7 @@ from rest_framework import status
 from django.http import Http404
 from auth_app.models import UserProfile,User
 from auth_app.serializers import UserProfileSerializer
+from client.serializers import ProductDisplaySerializer
 # Create your views here.
 
 ###############################################CategoryManagement#########################################################
@@ -321,3 +322,14 @@ class CustomerProfilesAPIView(APIView):
         profiles = UserProfile.objects.filter(user__in=customers)
         serializer = UserProfileSerializer(profiles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class AllProductViewAPIView(APIView) :
+    def get(self, request, pk=None):
+        if pk:
+            product_variant = ProductVariant.objects.get(pk=pk)
+            serializer = ProductDisplaySerializer(product_variant)
+            return Response(serializer.data)
+        else:
+            product_variants = ProductVariant.objects.all()
+            serializer = ProductDisplaySerializer(product_variants, many=True)
+            return Response(serializer.data)
