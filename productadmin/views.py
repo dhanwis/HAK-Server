@@ -333,3 +333,4 @@ class AllProductViewAPIView(APIView) :
             product_variants = ProductVariant.objects.all()
             serializer = ProductDisplaySerializer(product_variants, many=True)
             return Response(serializer.data)
+        
