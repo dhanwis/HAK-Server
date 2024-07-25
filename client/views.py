@@ -254,24 +254,21 @@ class ProductSearch(APIView) :
         serilaizer = ProductDisplaySerializer(products, many=True)
         return Response(serilaizer.data)
 
-class ProductSort(APIView) :
-    pagination_class = CustomLimitOffsetPagination
+class ProductSort(APIView):
 
-    def get(self, request) :
-        category_query = request.query_params.get('category',None)
-
-        if category_query :
+    def get(self, request):
+        category_query = request.query_params.get('category', None)
+        
+        if category_query:
             products = ProductVariant.objects.filter(
-                Q(product__category__name__iexact=category_query), product_status='sale'
-            )
-        else :
-            products = ProductVariant.objects.filter(product_status='sale')
+                Q(product__category__name__iexact=category_query),
+                product_status='Sale'
+            )   
+        else:
+            products = ProductVariant.objects.filter(product_status='Sale')
 
-        paginator = self.pagination_class()
-        paginated_products = paginator.paginate_queryset(products, request)
-        serializer = ProductDisplaySerializer(paginated_products, many=True)
-
-        return paginator.get_paginated_response(serializer.data)
+        serializer = ProductDisplaySerializer(products, many=True)
+        return Response(serializer.data)
 
 class UserReview(APIView) :
     def get(self, request, user_id) :

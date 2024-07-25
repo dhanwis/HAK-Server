@@ -28,7 +28,7 @@ class ColorImageSerializer(serializers.ModelSerializer):
 
 
 class ColorSerializer(serializers.ModelSerializer):
-    image = serializers.PrimaryKeyRelatedField(queryset=ColorImage.objects.all())
+    image = serializers.ImageField(source='image.image', read_only=True)
 
     class Meta:
         model = Color

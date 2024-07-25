@@ -61,6 +61,9 @@ class ProductDisplaySerializer(serializers.ModelSerializer):
         model = ProductVariant
         fields = ['id', 'product', 'size', 'color', 'actual_price', 'discount_price', 'stock', 'product_status']
 
+
+
+
 class ReviewSerializer(serializers.ModelSerializer) :
     class Meta:
         model = Review
