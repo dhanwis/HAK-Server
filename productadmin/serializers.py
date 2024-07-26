@@ -21,18 +21,28 @@ class SizeSerializer(serializers.ModelSerializer):
 
 
 class ColorImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
-        model=ColorImage
-        fields="__all__"
+        model = ColorImage
+        fields = '__all__'
 
-
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return ""
 
 class ColorSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(source='image.image', read_only=True)
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Color
         fields = '__all__'
+
+    def get_image_url(self, obj):
+        if obj.image and obj.image.image:
+            return obj.image.image.url
+        return ""
 
 
 class ProductvarientSerializer(serializers.ModelSerializer):

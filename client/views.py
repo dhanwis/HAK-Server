@@ -204,10 +204,10 @@ class CheckOutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-class LatestProductView(APIView) :
-    def get(self, request) :
+class LatestProductView(APIView):
+    def get(self, request):
         latest_product = ProductVariant.objects.filter(product_status='Sale').order_by('-id')[:3]
-        serializer = ProductDisplaySerializer(latest_product, many=True)
+        serializer = ProductDisplaySerializer(latest_product, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class BestSellerView(APIView) :
