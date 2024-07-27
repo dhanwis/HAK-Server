@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.conf import settings
 from rest_framework_simplejwt.tokens import AccessToken
-from .models import User
+from .models import User, UserProfile
 from .serializers import UserProfileSerializer
 from .utils import send_otp
 import random
@@ -56,6 +56,9 @@ class CustomerVerifyOTP(APIView):
             user = get_object_or_404(User, id=customer_id)
             otp = request.data.get("otp")
 
+            user_profile = get_object_or_404(UserProfile, user=user)
+            name = user_profile.firstname
+
             if user.is_active and user.otp == otp and user.otp_expiry and timezone.now() < user.otp_expiry:
                 # User is already active, update OTP-related fields and generate token
                 user.otp = ""
@@ -69,7 +72,8 @@ class CustomerVerifyOTP(APIView):
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'otp': 'Successfully verified the customer',
-                    'message': 'The customer already exists'
+                    'message': 'The customer already exists',
+                    'name' : name
                 }
                 return Response(data, status=status.HTTP_200_OK)
 
