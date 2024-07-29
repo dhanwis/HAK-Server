@@ -24,9 +24,9 @@ class WishlistItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product_name', 'product_image', 'product_price', 'created_at', 'product']
 
     def create(self, validated_data):
-        user_id = self.context['request'].user.id
-        product_id = validated_data.get('product').id
-        wishlist_item = WishList(user_id=user_id, product_id=product_id)
+        user = self.context['request'].user
+        product = validated_data.get('product')
+        wishlist_item = WishList(user=user, product=product)
         wishlist_item.save()
         return wishlist_item
 

@@ -12,6 +12,7 @@ from django.db import transaction
 from django.db.models import Sum, Q
 from productadmin.models import ProductVariant
 from .pagination import CustomLimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
@@ -110,6 +111,7 @@ class CartView(APIView):
         return sum(item.total_price for item in cart_items)
 
 class WishlistView(APIView):   
+    permission_classes = [IsAuthenticated]
     def get(self, request, user_id, format=None):
         wishlist_items = WishList.objects.filter(user_id=user_id)
         serializer = WishlistItemSerializer(wishlist_items, many=True)
@@ -125,7 +127,7 @@ class WishlistView(APIView):
             return Response({"detail": "Product already exists in wishlist."}, status=status.HTTP_400_BAD_REQUEST)
         except WishList.DoesNotExist:
             product = ProductVariant.objects.get(pk=product_id)
-            wishlist_data = {'user': user.id, 'product': product.id}
+            wishlist_data = {'product': product.id}
             serializer = WishlistItemSerializer(data=wishlist_data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()

@@ -73,7 +73,8 @@ class CustomerVerifyOTP(APIView):
                     'access': str(refresh.access_token),
                     'otp': 'Successfully verified the customer',
                     'message': 'The customer already exists',
-                    'name' : name
+                    'name' : name,
+                    'id' : customer_id
                 }
                 return Response(data, status=status.HTTP_200_OK)
 
