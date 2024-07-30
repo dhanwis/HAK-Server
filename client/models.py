@@ -57,6 +57,9 @@ class CheckOut(models.Model) :
         while CheckOut.objects.filter(id=check_id).exists():
             check_id = str(random.randint(1000, 9999))
         return check_id
+    
+    def __str__(self) :
+        return f"{self.id} - {self.first_name} - {self.order_status}"
 
 class Review(models.Model) :
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_superuser': False, 'is_product_admin': False})

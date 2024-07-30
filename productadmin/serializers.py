@@ -49,3 +49,17 @@ class ProductvarientSerializer(serializers.ModelSerializer):
     class Meta:
         model=ProductVariant
         fields="__all__"
+
+class ProductDisplaySerializer(serializers.ModelSerializer):
+    color = ColorSerializer(read_only=True)
+    product = ProductSerializer(read_only=True)
+    size = SizeSerializer(read_only=True)
+    category = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductVariant
+        fields = ['id', 'category', 'product', 'size', 'color', 'actual_price', 'discount_price', 'stock', 'product_status']
+
+    def get_category(self, obj):
+        category = obj.product.category
+        return CategorySerializer(category).data

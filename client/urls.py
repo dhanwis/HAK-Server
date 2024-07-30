@@ -7,7 +7,7 @@ urlpatterns = [
 
     path('wishlist/<int:user_id>/', WishlistView.as_view(), name='wishlist-view'),
     path('wishlist/<int:user_id>/<int:item_id>/', WishlistView.as_view(), name='wishlist-item-view'),
-    
+                                     
     path('order/<int:user_id>/', CheckOutView.as_view(), name='order-list'),
 
     path('product/latest',LatestProductView.as_view(), name='product-latest'),

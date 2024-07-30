@@ -16,15 +16,14 @@ class CartItemSerializer(serializers.ModelSerializer):
     
 class WishlistItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.product.name', read_only=True)
-    product_image = serializers.ImageField(source='product.color.images.first.image', read_only=True)
     product_price = serializers.FloatField(source='product.discount_price', read_only=True)
 
     class Meta:
         model = WishList
-        fields = ['id', 'product_name', 'product_image', 'product_price', 'created_at', 'product']
+        fields = ['id', 'product_name','product_price', 'created_at', 'product']
 
     def create(self, validated_data):
-        user = self.context['request'].user
+        user = self.context['user']
         product = validated_data.get('product')
         wishlist_item = WishList(user=user, product=product)
         wishlist_item.save()

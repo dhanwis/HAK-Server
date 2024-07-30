@@ -11,8 +11,9 @@ from django.http import Http404
 from django.db import transaction
 from django.db.models import Sum, Q
 from productadmin.models import ProductVariant
+from productadmin.serializers import *
 from .pagination import CustomLimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 # Create your views here.
 
 
@@ -41,6 +42,8 @@ class UserProfileUpdateView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class CartView(APIView):
+    # permission_classes = [IsAuthenticated]
+
     def get_object(self, user_id, item_id=None):
         if item_id:
             try:
@@ -110,8 +113,9 @@ class CartView(APIView):
     def calculate_subtotal(self, cart_items):
         return sum(item.total_price for item in cart_items)
 
-class WishlistView(APIView):   
-    permission_classes = [IsAuthenticated]
+class WishlistView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request, user_id, format=None):
         wishlist_items = WishList.objects.filter(user_id=user_id)
         serializer = WishlistItemSerializer(wishlist_items, many=True)
@@ -128,7 +132,7 @@ class WishlistView(APIView):
         except WishList.DoesNotExist:
             product = ProductVariant.objects.get(pk=product_id)
             wishlist_data = {'product': product.id}
-            serializer = WishlistItemSerializer(data=wishlist_data, context={'request': request})
+            serializer = WishlistItemSerializer(data=wishlist_data, context={'request': request, 'user': user})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -145,6 +149,7 @@ class WishlistView(APIView):
             return Response({"detail": "Wishlist item not found."}, status=status.HTTP_404_NOT_FOUND)
         
 class CheckOutView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, user_id, *args, **kwargs):
         try:
             user = User.objects.get(pk=user_id)
