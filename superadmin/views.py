@@ -138,22 +138,22 @@ class SalesAdminProfileView(APIView) :
 
 ##################################### Order Status Change ##########################################
 
-class OrderStatusChangeAPIView(APIView) :
-    def get_object(self, pk) :
-        try : 
+class OrderStatusChangeAPIView(APIView):
+    def get_object(self, pk):
+        try:
             return CheckOut.objects.get(pk=pk)
-        except CheckOut.DoesNotExist :
+        except CheckOut.DoesNotExist:
             raise Http404("No order found")
         
-    def patch(self, request, pk, format=None) :
+    def patch(self, request, pk, format=None):
         checkout = self.get_object(pk)
         serializer = OrderStatusChangeSerializer(checkout, data=request.data, partial=True)
-        if serializer.is_valid() :
-            if self.request.user.is_superuser or self.request.user.is_order_admin :
+        if serializer.is_valid():
+            if request.user.is_authenticated and (request.user.is_superuser or request.user.is_order_admin):
                 serializer.save()
                 return Response(serializer.data)
-            else :
-                return Response({'detail' : "You don't have the permission"}, status=status.HTTP_403_FORBIDDEN)
-        else :
+            else:
+                return Response({'detail': "You don't have the permission"}, status=status.HTTP_403_FORBIDDEN)
+        else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
