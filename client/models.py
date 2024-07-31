@@ -12,13 +12,13 @@ class CartItem(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username}'s cart item: {self.item.product.name} - {self.quantity}"
+        return f"{self.user.phone_number}'s cart item: {self.item.product.name} - {self.quantity}"
 
     @property
     def total_price(self):
         return self.quantity * self.item.discount_price
 
-class WishList(models.Model):
+class WishList(models.Model) :
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_superuser': False, 'is_product_admin': False})
     product = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

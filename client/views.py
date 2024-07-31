@@ -18,24 +18,29 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class UserProfileUpdateView(APIView):
-    def put(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
+    def get(self, request,user_id, format=None):
+        user_profile = get_object_or_404(UserProfile, user_id=user_id)
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request,user_id, format=None):
+        user_profile = get_object_or_404(UserProfile, user_id=user_id)
         serializer = UserProfileSerializer(user_profile, data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
+    def patch(self, request,user_id, format=None):
+        user_profile = get_object_or_404(UserProfile, user_id=user_id)
+        serializer = UserProfileSerializer(user_profile,data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, format=None):
-        user_profile = get_object_or_404(UserProfile, user=request.user)
+    def delete(self, request,user_id, format=None):
+        user_profile = get_object_or_404(UserProfile, user_id=user_id)
         user = user_profile.user
         user_profile.delete()
         user.delete()
@@ -144,7 +149,7 @@ class WishlistView(APIView):
             wishlist_item.delete()
             remaining_wishlist_items = WishList.objects.filter(user_id=user_id)
             serializer = WishlistItemSerializer(remaining_wishlist_items, many=True)
-            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except WishList.DoesNotExist:
             return Response({"detail": "Wishlist item not found."}, status=status.HTTP_404_NOT_FOUND)
         
@@ -184,7 +189,6 @@ class CheckOutView(APIView):
                         city=request.data.get('city'),
                         state=request.data.get('state'),
                         postal_code=request.data.get('postal_code'),
-                        order_status=request.data.get('order_status')
                     )
                 
                 serializer = CheckOutSerializer(checkout)
