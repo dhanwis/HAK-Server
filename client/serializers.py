@@ -37,7 +37,7 @@ class CheckOutSerializer(serializers.ModelSerializer):
         model = CheckOut
         fields = [
             'id', 'order', 'first_name', 'last_name', 'email', 'address', 'mobile_no',
-            'company_name', 'country', 'city', 'state', 'postal_code', 'ordered_items'
+            'company_name', 'country', 'city', 'state', 'postal_code', 'ordered_items', 'order_status'
         ]
 
     def get_ordered_items(self, instance):

@@ -63,7 +63,7 @@ class ProductVariant(models.Model):
         unique_together = ('product', 'size', 'color')
 
     def __str__(self):
-        return f"{self.product.name} - {self.color} - {self.size}"
+        return f"{self.id} - {self.product.name} - {self.color} - {self.size} - {self.stock}"
     
     def save(self, *args, **kwargs):
         if self.stock == 0 :
