@@ -9,5 +9,6 @@ urlpatterns = [
     path("create/salesadmin/", CreateSalesAdminView.as_view(), name="create-salesadmin"),
     path("sales-admin-profile/<int:pk>", SalesAdminProfileView.as_view(), name="sales-admin-profile"),
     path("customre/deactivate-delete/<int:pk>/", DeactivateCustomerAPIView.as_view(), name="Deactivate-customer"),
-    path('order-status-change/<int:pk>/', OrderStatusChangeAPIView.as_view(), name='order-status-change')
+    path('order-status-change/<int:pk>/', OrderStatusChangeAPIView.as_view(), name='order-status-change'),
+    path('all-order/', AllOrderView.as_view(), name='allorder')
 ]

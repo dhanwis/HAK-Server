@@ -156,4 +156,10 @@ class OrderStatusChangeAPIView(APIView):
                 return Response({'detail': "You don't have the permission"}, status=status.HTTP_403_FORBIDDEN)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class AllOrderView(APIView) :
+    def get(self, request, format=None) :
+        checkout = CheckOut.objects.all()
+        serializer = CheckOutSerializer(checkout, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
