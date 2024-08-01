@@ -30,7 +30,7 @@ class CheckOut(models.Model) :
     STATUS_CHOICE = (
         ("Order Pending", "Order Pending"),
         ("Order Confirmed", "Order Confirmed"),
-        ("Order Shipped", "Order Order Shipped"),
+        ("Order Shipped", "Order Shipped"),
         ("Order Delivered", "Order Delivered")
     )
     order_status = models.CharField(max_length=20, choices=STATUS_CHOICE, default="Order Pending")

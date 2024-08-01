@@ -9,6 +9,7 @@ from productadmin.models import *
 from auth_app.serializers import UserProfileSerializer
 from client.models import CheckOut
 from client.serializers import CheckOutSerializer
+from rest_framework.permissions import AllowAny
 # Create your views here.
 
 ###############################################ProductAdminManagemet#####################################################
@@ -149,11 +150,9 @@ class OrderStatusChangeAPIView(APIView):
         checkout = self.get_object(pk)
         serializer = OrderStatusChangeSerializer(checkout, data=request.data, partial=True)
         if serializer.is_valid():
-            if request.user.is_authenticated and (request.user.is_superuser or request.user.is_order_admin):
-                serializer.save()
-                return Response(serializer.data)
-            else:
-                return Response({'detail': "You don't have the permission"}, status=status.HTTP_403_FORBIDDEN)
+            # if request.user.is_authenticated and (request.user.is_superuser or request.user.is_order_admin):
+            serializer.save()
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
