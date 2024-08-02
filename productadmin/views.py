@@ -296,6 +296,9 @@ class ProductVariantAPIView(APIView):
     
     def patch(self, request, pk):
         product_variant = self.get_object(pk)
+        if 'stock' in request.data :
+            product_variant.stock += int(request.data['stock'])
+            request.data.pop('stock')
         serializer = ProductvarientSerializer(product_variant, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

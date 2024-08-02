@@ -262,6 +262,8 @@ class ProductSearch(APIView) :
                 Q(product__category__name__icontains=query), 
                 product_status='Sale'
             )
+        else:
+            products = ProductVariant.objects.filter(product_status='Sale')
         serilaizer = ProductDisplaySerializer(products, many=True)
         return Response(serilaizer.data)
 
